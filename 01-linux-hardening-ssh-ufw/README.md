@@ -116,8 +116,47 @@ sudo ./scripts/audit_ssh.sh
 
 ## 7. Evidencia de Ejecución
 
-Salida obtenida tras ejecutar la auditoría de verificación sobre `admin-ddbb` (`192.168.164.129`):
+Salida obtenida tras ejecutar `./scripts/audit_ssh.sh` sobre `admin-ddbb` (`192.168.164.129`):
 
 ```text
-# Pega aquí la salida real de tu terminal al ejecutar el comando de auditoría
+==========================================
+  AUDITORÍA DE SEGURIDAD SSH & FIREWALL
+==========================================
+
+[1] Estado del servicio SSH:
+  -> ssh: ACTIVO
+
+[2] Directivas críticas efectivas (sshd -T):
+  -> port 2222
+  -> maxauthtries 3
+  -> permitrootlogin no
+  -> pubkeyauthentication yes
+  -> passwordauthentication no
+  -> x11forwarding no
+
+[3] Estado y reglas de UFW:
+  -> Estado: activo
+  -> Acceso: on (low)
+  -> Predeterminado: deny (entrantes), allow (salientes), deny (enrutados)
+  -> Perfiles nuevos: skip
+  -> 
+  -> Hasta                      Acción      Desde
+  -> -----                      ------      -----
+  -> 2222/tcp                   ALLOW IN    192.168.164.0/24          
+  -> 
+
+[4] Estado de Fail2Ban (jail sshd):
+  -> Status for the jail: sshd
+  -> |- Filter
+  -> |  |- Currently failed:	0
+  -> |  |- Total failed:	0
+  -> |  `- File list:	/var/log/auth.log
+  -> `- Actions
+  ->    |- Currently banned:	0
+  ->    |- Total banned:	0
+  ->    `- Banned IP list:	
+
+==========================================
+  Auditoría finalizada.
+==========================================
 ```
