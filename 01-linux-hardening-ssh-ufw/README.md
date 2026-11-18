@@ -115,7 +115,7 @@ sudo systemctl enable --now apt-daily.timer apt-daily-upgrade.timer
 
 ### 5.1. Pruebas de conectividad, rechazo y bloqueo activo (Fail2Ban)
 Desde la estación cliente (`192.168.164.139`):
-* **Acceso autorizado mediante alias:** `ssh lab-ubuntu` -> Muestra el banner legal pre-autenticación y concede sesión directa sin contraseña mediante clave Ed25519[cite: 9].
+* **Acceso autorizado mediante alias:** `ssh lab-ubuntu` -> Muestra el banner legal pre-autenticación y concede sesión directa sin contraseña mediante clave Ed25519.
 * **Acceso privilegiado bloqueado:** `ssh -p 2222 root@192.168.164.129` -> Rechazado (`Permission denied (publickey)`).
 * **Simulación de ataque y desbaneo controlado:** Tras provocar 3 intentos fallidos consecutivos, Fail2Ban añade la IP atacante al bloqueo perimetral. Para revertirlo desde consola administrativa:
   ```bash
@@ -200,3 +200,22 @@ Status for the jail: sshd
    |- Total banned:	1
    `- Banned IP list:	192.168.164.139
 ```
+
+## 8. Conclusiones y Aprendizajes Clave
+
+* **Defensa en profundidad (*Defense in Depth*):**
+  * **Red (`UFW`):** Restringe la exposición únicamente al puerto `2222/tcp` y a la subred de administración.
+  * **Identidad (`OpenSSH`):** Elimina el vector de fuerza bruta por contraseña y el acceso directo como `root` exigiendo claves `Ed25519`.
+  * **Respuesta activa (`Fail2Ban`):** Automatiza el bloqueo perimetral tras detectar patrones de intrusión en `/var/log/auth.log`.
+  * **Mantenimiento (`unattended-upgrades`):** Garantiza la aplicación continua de parches críticos sin intervención manual.
+
+* **Operativa segura y prevención de *lockouts*:**
+  * Usar ficheros modulares en `/etc/ssh/sshd_config.d/` mantiene limpia la configuración base frente a futuras actualizaciones.
+  * Validar siempre con `sshd -t` y conservar una sesión activa (o consola del hipervisor) evita perder el acceso remoto al aplicar reglas restrictivas.
+
+* **Auditoría sobre el estado real en memoria:**
+  * Comprobar archivos en disco no garantiza que los cambios estén aplicados; herramientas como `sshd -T`, `ufw status verbose` y `fail2ban-client status` permiten auditar el estado efectivo en tiempo de ejecución y automatizarlo en Bash.
+
+* **Resolución de incidencias reales:**
+  * Diagnosticar bloqueos previos de firewall, autobaneos durante pruebas de intrusión y contenciones de `dpkg` permite actuar sobre los procesos exactos sin comprometer la integridad del sistema.
+
