@@ -1,0 +1,11 @@
+# Configuración bastionada de OpenSSH (/etc/ssh/sshd_config.d/99-hardening.conf)
+# Servidor objetivo: Ubuntu 22.04.5 LTS (admin-ddbb) - Lab 01
+
+Port 2222
+PermitRootLogin no
+AllowUsers sysadmin
+PasswordAuthentication no
+PermitEmptyPasswords no
+PubkeyAuthentication yes
+MaxAuthTries 3
+X11Forwarding no
