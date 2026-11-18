@@ -7,8 +7,8 @@ Desplegar una configuración base segura (*hardening*) para el acceso administra
 
 ## 2. Arquitectura y Topología del Entorno
 
-* **Servidor Objetivo:** VM Linux (Debian/Ubuntu Server) — IP: `192.168.10.20/24`
-* **Equipo de Administración:** Estación cliente — Subred autorizada: `192.168.10.0/24`
+* **Servidor Objetivo:** VM Linux (Ubuntu Escritorio) — IP: `192.168.164.129/24`
+* **Equipo de Administración:** Estación cliente — Subred autorizada: `192.168.164.139/24`
 * **Usuario Administrador:** `sysadmin` (con privilegios `sudo`)
 * **Política de Acceso:** Autenticación exclusiva mediante clave criptográfica **Ed25519** en puerto no estándar (`TCP/2222`).
 
