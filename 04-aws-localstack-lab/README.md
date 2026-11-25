@@ -1,62 +1,62 @@
-# ☁️ Lab 04: Automatización IAM y Entorno Cloud Local con LocalStack
+# ☁️ Lab 04: IAM Automation & Local Cloud Environment with LocalStack
 
-Procedimiento Operativo Estándar (SOP) para el despliegue de un entorno AWS simulado en local mediante **Docker Compose** y **LocalStack**, incorporando *Lifecycle Hooks* (`ready.d` y `shutdown.d`) para provisionar automáticamente identidades IAM, roles de servicio y auditorías de seguridad sin depender de un estado persistente.
-
----
-
-## 🎯 1. Contexto y Motivación Técnica (El Porqué)
-
-En entornos de aprendizaje y pruebas rápidas con **LocalStack** (versión *Freemium/Community*), el estado de los recursos IAM reside en memoria RAM (efímero): cada vez que se reinicia el contenedor o el equipo, los usuarios, grupos, políticas y roles desaparecen.
-
-Para evitar reconfigurar manualmente toda la base de identidad al inicio de cada sesión de laboratorio y aplicar buenas prácticas de **AWS IAM (SAA-C03)** desde el primer minuto, se diseñó esta arquitectura automatizada bajo tres principios:
-
-1. **Inmutabilidad y Reproducibilidad (*Bootstrap* automático):** Al pasar el contenedor a estado `READY`, un hook en Bash reconstruye desde cero la estructura base de IAM  y exporta las credenciales a un directorio local excluido de Git (`output/`).
-2. **Separación de Privilegios (Admin vs. Test / Asunción de Roles):**
-   - El usuario administrador (`aimenrial432`) hereda permisos totales a través de un **IAM Group** (`admin`), nunca mediante políticas directas sobre el usuario.
-   - El usuario de pruebas (`aws_test`) no tiene permisos directos sobre servicios; en su lugar, tiene autorización mínima (`sts:AssumeRole`) para asumir **IAM Roles** temporales (`DemoRole*`), simulando exactamente cómo los servicios de AWS (como instancias EC2) consumen permisos sin exponer claves estáticas.
-3. **Auditoría Continua al Cierre (*Teardown Hook*):** Antes de detener el contenedor de forma controlada, un hook de apagado (`shutdown.d`) extrae automáticamente el **IAM Credential Report** (CSV) y los datos de **IAM Access Advisor** (JSON) para auditar el uso real de credenciales y aplicar el principio de privilegio mínimo.
+Standard Operating Procedure (SOP) for deploying a simulated local AWS environment using **Docker Compose** and **LocalStack**, leveraging *Lifecycle Hooks* (`ready.d` and `shutdown.d`) to automatically provision IAM identities, service roles, and security audits without relying on persistent state.
 
 ---
 
-## 🏗️ 2. Arquitectura del Laboratorio
+## 🎯 1. Context & Technical Motivation (The Why)
+
+In local learning and rapid prototyping environments using **LocalStack** (*Freemium/Community* tier), IAM resource state lives in volatile RAM: every time the container or host machine restarts, all users, groups, policies, and roles are wiped.
+
+To avoid manually reconfiguring the entire identity baseline before every lab session and to enforce **AWS IAM (SAA-C03)** best practices from day one, this automated setup was designed around three core principles:
+
+1. **Immutability & Reproducibility (Automated Bootstrap):** Once the container reaches the `READY` state, a Bash hook rebuilds the core IAM baseline from scratch in under 10 seconds and exports fresh credentials to a local Git-ignored directory (`output/`).
+2. **Privilege Separation (Admin vs. Test / Role Assumption):**
+   - The administrator user (`aimenrial432`) inherits full permissions through an **IAM Group** (`admin`), never via inline or direct user policies.
+   - The testing user (`aws_test`) holds zero direct service permissions; instead, it is granted minimal authorization (`sts:AssumeRole`) to assume temporary **IAM Roles** (`DemoRole*`), mirroring how AWS services (such as EC2 instances) consume permissions without exposing static credentials.
+3. **Continuous Auditing on Shutdown (Teardown Hook):** Before stopping the container gracefully, a shutdown hook (`shutdown.d`) automatically exports the **IAM Credential Report** (CSV) and **IAM Access Advisor** telemetry (JSON) to audit credential usage and enforce the Principle of Least Privilege.
+
+---
+
+## 🏗️ 2. Lab Architecture
 
 ```text
 04-aws-localstack-lab/
-├── docker-compose.yml              # Orquestación del contenedor LocalStack y montaje de volúmenes
-├── .env                            # Token de activación freemium (excluido de Git)
+├── docker-compose.yml              # LocalStack container orchestration & volume mounts
+├── .env                            # Freemium activation token (Git-ignored)
 ├── hooks/
 │   ├── ready.d/
-│   │   └── 01-init-iam.sh          # Provisionamiento automático al arrancar (Usuarios, Grupo, Roles)
+│   │   └── 01-init-iam.sh          # Automated startup provisioning (Users, Group, Roles)
 │   └── shutdown.d/
-│       └── 99-audit-iam.sh       # Extracción automática de reportes de auditoría al apagar
-└── output/                         # Artefactos generados en ejecución (excluido de Git)
-    ├── iam-credentials.json        # Access Keys generadas en el arranque
-    ├── credential-report.csv       # Informe global de credenciales al cierre
-    └── access-advisor-*.json       # Telemetría de servicios accedidos por usuario
+│       └── 99-audit-iam.sh       # Automated audit report extraction on shutdown
+└── output/                         # Runtime-generated artifacts (Git-ignored)
+    ├── iam-credentials.json        # Access Keys generated during bootstrap
+    ├── credential-report.csv       # Account-wide credential report on teardown
+    └── access-advisor-*.json       # Service last-accessed telemetry per user
 ```
 
-### Flujo de Ejecución Automatizado
+### Automated Execution Flow
 
-| Fase | Trigger | Script | Acciones Ejecutadas |
+| Phase | Trigger | Script | Executed Actions |
 | :--- | :--- | :--- | :--- |
-| **1. Arranque** | `ready.d` | `01-init-iam.sh` | • Limpia artefactos de sesiones previas en `output/`.<br>• Crea el grupo `admin` (`AdministratorAccess`), el alias `aimenrial-cloud-lab` y el usuario `aimenrial432`.<br>• Crea el usuario `aws_test` y genera las *Access Keys* de ambos en `output/iam-credentials.json`.<br>• Crea `DemoRoleForEC2` (`IAMReadOnlyAccess`) junto con su *Instance Profile* y autoriza a `aws_test` a asumir cualquier `DemoRole*`. |
-| **2. Operación** | Manual (CLI) | `aws` / `awslocal` | • Pruebas de arquitectura, cambio de perfiles (`--profile`) y asunción temporal de roles mediante `sts:AssumeRole`. |
-| **3. Apagado** | `shutdown.d` | `99-audit-iam.sh` | • Genera y decodifica (Base64 $\rightarrow$ CSV) el **IAM Credential Report**.<br>• Lanza trabajos asíncronos de **IAM Access Advisor** para `aimenrial432` y `aws_test` y guarda los resultados en JSON. |
+| **1. Startup** | `ready.d` | `01-init-iam.sh` | • Cleans up artifacts from previous sessions in `output/`.<br>• Creates the `admin` group (`AdministratorAccess`), account alias `aimenrial-cloud-lab`, and user `aimenrial432`.<br>• Creates user `aws_test` and generates *Access Keys* for both users into `output/iam-credentials.json`.<br>• Creates `DemoRoleForEC2` (`IAMReadOnlyAccess`) along with its *Instance Profile*, and authorizes `aws_test` to assume any `DemoRole*`. |
+| **2. Operation** | Manual (CLI) | `aws` / `awslocal` | • Architecture testing, CLI profile switching (`--profile`), and temporary role assumption via `sts:AssumeRole`. |
+| **3. Shutdown** | `shutdown.d` | `99-audit-iam.sh` | • Generates and Base64-decodes the **IAM Credential Report** into CSV.<br>• Triggers asynchronous **IAM Access Advisor** jobs for `aimenrial432` and `aws_test` and saves the output as JSON. |
 
 ---
 
-## ⚙️ 3. Despliegue y Uso (SOP)
+## ⚙️ 3. Deployment & Usage (SOP)
 
-### Prerrequisitos
-- **Docker Desktop** operativo.
-- **AWS CLI v2** instalado en el host.
-- Token gratuito de LocalStack (`LOCALSTACK_AUTH_TOKEN`) guardado en `.env`:
+### Prerequisites
+- **Docker Desktop** running.
+- **AWS CLI v2** installed on the host.
+- Free LocalStack token (`LOCALSTACK_AUTH_TOKEN`) stored in `.env`:
 
 ```env
 LOCALSTACK_AUTH_TOKEN=ls-xxxxxxxxxxxxxxxxxxxx
 ```
 
-### Levantar el Entorno
+### Start the Environment
 
 ```powershell
 cd 04-aws-localstack-lab
@@ -64,27 +64,28 @@ docker compose up -d
 docker logs -f localstack-aws-lab
 ```
 
-> **Validación:** Confirmar en los logs la aparición de `[INIT-IAM] Bootstrap IAM completado con exito.` y verificar que existe `output/iam-credentials.json`.
+> **Validation:** Confirm `[INIT-IAM] Bootstrap IAM completed successfully.` in the container logs and verify that `output/iam-credentials.json` has been generated.
 
-### Configurar Perfiles en AWS CLI (Host Windows)
-Con las claves generadas en `output/iam-credentials.json`, registrar las identidades en `~/.aws/credentials`:
+### Configure AWS CLI Profiles (Windows Host)
+Using the keys exported to `output/iam-credentials.json`, register both profiles in `~/.aws/credentials`:
 
 ```powershell
 aws configure --profile aimenrial432
 aws configure --profile aws_test
 ```
 
-### Detener el Entorno y Generar Auditoría
+### Stop the Environment & Generate Audit Reports
 
 ```powershell
 docker compose down
 ```
-> **Validación:** Al detener el contenedor de forma ordenada, comprobar en `output/` la creación de `credential-report.csv`, `access-advisor-aimenrial432.json` y `access-advisor-aws_test.json`.
+
+> **Validation:** After a graceful shutdown, verify that `credential-report.csv`, `access-advisor-aimenrial432.json`, and `access-advisor-aws_test.json` appear inside `output/`.
 
 ---
 
-## 🛠️ 4. Resolución de Incidencias Documentadas
+## 🛠️ 4. Documented Troubleshooting
 
-- **Error `exit code 55 (License activation failed)` al arrancar:** Las imágenes recientes de LocalStack requieren `LOCALSTACK_AUTH_TOKEN` incluso en el plan gratuito (*Freemium*). Solucionado inyectando la variable desde `.env` en `docker-compose.yml`.
-- **Error `/bin/bash^M: bad interpreter` en Windows:** Los scripts `.sh` editados en Windows contienen saltos de línea `CRLF`. Antes de montar los hooks, deben guardarse en codificación **UTF-8 sin BOM** y formato de línea Unix (**`LF`**).
-- **Deprecación de `awslocal` en logs:** Para evitar el *overhead* visual de advertencias de deprecación en cada comando dentro de los hooks, se emplea un wrapper directo sobre `aws --endpoint-url=http://localhost:4566`.
+- **`exit code 55 (License activation failed)` on startup:** Recent LocalStack images require a valid `LOCALSTACK_AUTH_TOKEN` even on the free (*Freemium*) tier. Resolved by injecting the variable from `.env` inside `docker-compose.yml`.
+- **`/bin/bash^M: bad interpreter` on Windows:** Shell scripts edited on Windows default to `CRLF` line endings. Before mounting hooks, ensure files are saved as **UTF-8 without BOM** with Unix (**`LF`**) line endings.
+- **`awslocal` deprecation warnings in logs:** To eliminate verbose deprecation banners on every CLI call inside hooks, scripts use a lightweight wrapper directly targeting `aws --endpoint-url=http://localhost:4566`.
