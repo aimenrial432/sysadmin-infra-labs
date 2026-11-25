@@ -17,7 +17,8 @@ Each lab is documented as a Standard Operating Procedure (SOP), covering archite
 
 ---
 
-### 🧰 Entorno de Laboratorio
-* **Hipervisor:** VMware Workstation Pro
-* **Sistemas Operativos:** Debian / Ubuntu Server, Arch (Archcraft) Linux, Windows Server
-* **Redes & Herramientas:** Cisco Packet Tracer, OpenSSH, UFW, Fail2Ban, Bash, Python
+### 🧰 Lab Environment
+- **Hypervisor & Containers:** VMware Workstation Pro, Docker Engine & Docker Compose
+- **Operating Systems:** Debian / Ubuntu Server, Arch (Archcraft) Linux, Windows Server
+- **Cloud & Emulation:** LocalStack (AWS Cloud Emulator), AWS CLI v2, IAM
+- **Networking, Security & Automation:** Cisco Packet Tracer, OpenSSH, UFW, Fail2Ban, Bash, Python
