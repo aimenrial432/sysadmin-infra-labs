@@ -1,19 +1,19 @@
 # 🖥️ SysAdmin, Cloud & Infrastructure Labs
 
-Repositorio de laboratorios prácticos, *runbooks* técnicos y scripts de automatización orientados a la administración de sistemas, redes, cloud (AWS) y seguridad perimetral en entornos Linux, Windows y contenedores.
+Hands-on laboratory repository, technical *runbooks*, and automation scripts focused on systems administration, networking, cloud architecture (AWS), and perimeter security across Linux, Windows, and containerized environments.
 
-Cada laboratorio está documentado como un procedimiento operativo estándar (SOP), incluyendo arquitectura, configuración aplicada, validación técnica y resolución de incidencias.
+Each lab is documented as a Standard Operating Procedure (SOP), covering architecture, applied configuration, technical validation, and troubleshooting.
 
 ---
 
-### 📂 Índice de Laboratorios
+### 📂 Lab Index
 
-| ID | Laboratorio | Tecnologías | Área | Estado |
+| ID | Lab | Technologies | Domain | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **01** | [Bastionado SSH, UFW y Auditoría Automatizada](./01-linux-hardening-ssh-ufw) | Linux, OpenSSH, UFW, Fail2Ban, Bash | Sistemas & Seguridad | En proceso |
-| **02** | Segmentación de Red VLAN e Inter-VLAN Routing | Cisco IOS, VLANs, 802.1Q, DHCP, ACLs | Networking (CCNA) | 🚧 Próximamente |
-| **03** | Despliegue Seguro con Reverse Proxy y TLS/PKI | Docker, Nginx, OpenSSL / PKI, Linux | Infraestructura & Web | 📋 Planificado |
-| **04** | [Automatización IAM y Laboratorio Cloud Local con LocalStack](./04-aws-localstack-lab) | AWS CLI, IAM, Docker Compose, LocalStack, Bash | Cloud & IAM (SAA-C03) | En proceso |
+| **01** | [SSH Hardening, UFW & Automated Auditing](./01-linux-hardening-ssh-ufw) | Linux, OpenSSH, UFW, Fail2Ban, Bash | Systems & Security | In Progress |
+| **02** | VLAN Network Segmentation & Inter-VLAN Routing | Cisco IOS, VLANs, 802.1Q, DHCP, ACLs | Networking (CCNA) | 🚧 Coming Soon |
+| **03** | Secure Deployment with Reverse Proxy & TLS/PKI | Docker, Nginx, OpenSSL / PKI, Linux | Infrastructure & Web | 📋 Planned |
+| **04** | [IAM Automation & Local Cloud Lab with LocalStack](./04-aws-localstack-lab) | AWS CLI, IAM, Docker Compose, LocalStack, Bash | Cloud & IAM (SAA-C03) | In Progress |
 
 ---
 
