@@ -1,0 +1,15 @@
+services:
+  localstack:
+    container_name: localstack-aws-lab
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      - DEBUG=0
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "./hooks/ready.d:/etc/localstack/init/ready.d"
+      - "./hooks/shutdown.d:/etc/localstack/init/shutdown.d"
+      - "./output:/opt/lab-output"
+      - "/var/run/docker.sock:/var/run/docker.sock"
