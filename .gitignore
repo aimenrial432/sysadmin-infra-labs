@@ -1,0 +1,5 @@
+# LocalStack secrets & generated lab outputs
+.env
+**/.env
+output/
+**/output/
