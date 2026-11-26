@@ -23,16 +23,17 @@ To avoid manually reconfiguring the entire identity baseline before every lab se
 ```text
 04-aws-localstack-lab/
 ├── docker-compose.yml              # LocalStack container orchestration & volume mounts
-├── .env                            # Freemium activation token (Git-ignored)
 ├── hooks/
 │   ├── ready.d/
 │   │   └── 01-init-iam.sh          # Automated startup provisioning (Users, Group, Roles)
 │   └── shutdown.d/
 │       └── 99-audit-iam.sh       # Automated audit report extraction on shutdown
-└── output/                         # Runtime-generated artifacts (Git-ignored)
+├── .env                            # [Local / Git-ignored] Freemium activation token (create manually)
+└── output/                         # [Auto-generated / Git-ignored] Runtime artifacts created on startup/shutdown
     ├── iam-credentials.json        # Access Keys generated during bootstrap
     ├── credential-report.csv       # Account-wide credential report on teardown
     └── access-advisor-*.json       # Service last-accessed telemetry per user
+
 ```
 
 ### Automated Execution Flow
