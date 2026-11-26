@@ -93,10 +93,12 @@ docker compose down
 
 ---
 
-## 🚀 5. Roadmap (Planned Enhancements)
+---
 
-This automation baseline is actively evolving alongside my **AWS SAA-C03** lab progression:
+## 🚀 5. Roadmap & Future Scope
 
-- [x] **IAM Bootstrap & Teardown Hooks:** Automated user/group/role creation on startup (`ready.d`) and Credential Report / Access Advisor auditing on shutdown (`shutdown.d`).
-- [ ] **EC2 Dynamic Runtime Provisioning:** Wrapper script to extract Base64 `UserData` directly from LocalStack API and spin up isolated `amazonlinux:2` validation containers.
-- [ ] **Storage & Networking Baseline:** Automated initialization of versioned S3 lab buckets and custom VPC / Security Group templates.
+This automation is driven by operational need and evolves as new AWS workflows require persistent provisioning to overcome the volatile, in-memory nature of LocalStack:
+
+- [x] **IAM Bootstrap & Teardown Hooks:** Automated user, group, and role provisioning on startup (`ready.d`) alongside Credential Report and Access Advisor auditing on shutdown (`shutdown.d`).
+- [ ] **On-Demand Service Provisioning:** Extending startup hooks with additional AWS resources (such as EC2 runtime validation wrappers, base Security Groups, or S3 buckets) strictly as recurring lab workflows require them.
+
