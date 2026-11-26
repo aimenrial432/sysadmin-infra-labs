@@ -13,7 +13,7 @@ Each lab is documented as a Standard Operating Procedure (SOP), covering archite
 | **01** | [SSH Hardening, UFW & Automated Auditing](./01-linux-hardening-ssh-ufw) | Linux, OpenSSH, UFW, Fail2Ban, Bash | Systems & Security | In Progress |
 | **02** | VLAN Network Segmentation & Inter-VLAN Routing | Cisco IOS, VLANs, 802.1Q, DHCP, ACLs | Networking (CCNA) | 🚧 Coming Soon |
 | **03** | Secure Deployment with Reverse Proxy & TLS/PKI | Docker, Nginx, OpenSSL / PKI, Linux | Infrastructure & Web | 📋 Planned |
-| **04** | [IAM Automation & Local Cloud Lab with LocalStack](./04-aws-localstack-lab) | AWS CLI, IAM, Docker Compose, LocalStack, Bash | Cloud & IAM (SAA-C03) | In Progress |
+| **04** | [IAM Automation & Local Cloud Environment with LocalStack](./04-aws-localstack-lab) | AWS CLI, IAM, Docker Compose, LocalStack, Bash | Cloud & IAM Automation | In Progress |
 
 ---
 
