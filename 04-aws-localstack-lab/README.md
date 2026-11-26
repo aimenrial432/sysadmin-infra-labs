@@ -90,3 +90,13 @@ docker compose down
 - **`exit code 55 (License activation failed)` on startup:** Recent LocalStack images require a valid `LOCALSTACK_AUTH_TOKEN` even on the free (*Freemium*) tier. Resolved by injecting the variable from `.env` inside `docker-compose.yml`.
 - **`/bin/bash^M: bad interpreter` on Windows:** Shell scripts edited on Windows default to `CRLF` line endings. Before mounting hooks, ensure files are saved as **UTF-8 without BOM** with Unix (**`LF`**) line endings.
 - **`awslocal` deprecation warnings in logs:** To eliminate verbose deprecation banners on every CLI call inside hooks, scripts use a lightweight wrapper directly targeting `aws --endpoint-url=http://localhost:4566`.
+
+---
+
+## 🚀 5. Roadmap (Planned Enhancements)
+
+This automation baseline is actively evolving alongside my **AWS SAA-C03** lab progression:
+
+- [x] **IAM Bootstrap & Teardown Hooks:** Automated user/group/role creation on startup (`ready.d`) and Credential Report / Access Advisor auditing on shutdown (`shutdown.d`).
+- [ ] **EC2 Dynamic Runtime Provisioning:** Wrapper script to extract Base64 `UserData` directly from LocalStack API and spin up isolated `amazonlinux:2` validation containers.
+- [ ] **Storage & Networking Baseline:** Automated initialization of versioned S3 lab buckets and custom VPC / Security Group templates.
